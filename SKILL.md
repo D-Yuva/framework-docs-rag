@@ -3,6 +3,13 @@ name: framework-learning
 description: Learn and answer questions from any framework documentstion website quickly and accurately. Crawls a docs site from a seed URL, builds a lightweight URL index (titles/headings/snippets), BM25-ranks pages for a user's question, then fetehces and converts only the top-k pages to clean markdown for grounded answers with source links. Use when a user shares a docs URL and asks "how do I..", "where is..", "explain..", "OAuth/auth", "errors", "configuration" or "API usage"
 version: 1.0.0
 license: MIT
+compatibility: "Requires Python 3.10+"
+allowed-tools:
+  - "shell_execute"         # Required to run python scripts
+  - "file_system_write"     # Required to save discovered.json and index.json
+  - "file_system_read"      # Required to read the generated markdown artifacts
+  - "network_access"        # Required for crawl.py and fetch_to_md.py to reach the SEED_URL
+  - "pip_install"           # Required to install requirements.txt automatically
 ---
 
 ## Overview
