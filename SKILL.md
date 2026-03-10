@@ -1,6 +1,6 @@
 ---
 name: framework-docs-rag
-description: Learn and answer questions from any framework documentstion website quickly and accurately. Crawls a docs site from a seed URL, builds a lightweight URL index (titles/headings/snippets), BM25-ranks pages for a user's question, then fetehces and converts only the top-k pages to clean markdown for grounded answers with source links. Use when a user shares a docs URL and asks "how do I..", "where is..", "explain..", "OAuth/auth", "errors", "configuration" or "API usage"
+description: Learn and answer questions from any framework documentstion website quickly and accurately. Crawls a docs site from a seed URL, builds a lightweight URL index (titles/headings/snippets), BM25-ranks pages for a user's question, then fetches and converts only the top-k pages to clean markdown for grounded answers with source links. Use when a user shares a docs URL and asks "how do I..", "where is..", "explain..", "OAuth/auth", "errors", "configuration" or "API usage"
 version: 1.0.0
 license: MIT
 compatibility: "Requires Python 3.10+"
@@ -24,7 +24,7 @@ Use this Skill when the user:
 ## Inputs (what to ask the user for)
 Always confirm these inputs before running scripts:
 - `SEED_URL`: The docs homepage (e.g., `https://docs.example.com/`).
-- `QUESTION` (optional): If the user asked a specific question.
+- `QUESTION` (optional): If the user asked a specific question. (Make sure to remove any newlines or `#` characters from the QUESTION string before passing it to the script).
 
 If the user did not provide a question, ask:
 “What should be answered from these docs, or do you want a docs overview?”
@@ -46,22 +46,22 @@ If unclear, ask one clarifying question:
 Goal: build the index and produce a concise docs map from the index.
 
 ### Step 1 — Crawl and discover URLs
-```bash skills/framework-learning/scripts/install_deps.sh
+```bash scripts/install_deps.sh
 ```
 
 ```bash
-python skills/framework-learning/scripts/crawl.py --seed "$SEED_URL" --out skills/framework-learning/artifacts/discovered.json
+python scripts/crawl.py --seed "$SEED_URL" --out artifacts/discovered.json
 ```
 
 ### Step 2 — Build a lightweight index
 ```bash
-python skills/framework-learning/scripts/build_index.py \
-  --in skills/framework-learning/artifacts/discovered.json \
-  --out skills/framework-learning/artifacts/index.json
+python scripts/build_index.py \
+  --in artifacts/discovered.json \
+  --out artifacts/index.json
 ```
 
 ### Step 3 — Produce a docs map (no page dumps)
-Read `skills/framework-learning/artifacts/index.json` 
+Read `artifacts/index.json` 
 
 Output a short outline grouped by section/title.
 Provide suggested “next questions” the user can ask.
@@ -70,53 +70,53 @@ Provide suggested “next questions” the user can ask.
 Goal: answer precisely by retrieving only the top-K pages relevant to the question.
 
 ### Step 1 — Ensure the index exists
-If `skills/framework-learning/artifacts/index.json` is missing, create it:
+If `artifacts/index.json` is missing, create it:
 
-```bash skills/framework-learning/scripts/install_deps.sh
+```bash scripts/install_deps.sh
 ```
 
 ```bash
-python skills/framework-learning/scripts/crawl.py \
+python scripts/crawl.py \
   --seed "$SEED_URL" \
-  --out skills/framework-learning/artifacts/discovered.json
+  --out artifacts/discovered.json
 
-python skills/framework-learning/scripts/build_index.py \
-  --in skills/framework-learning/artifacts/discovered.json \
-  --out skills/framework-learning/artifacts/index.json
+python scripts/build_index.py \
+  --in artifacts/discovered.json \
+  --out artifacts/index.json
 
 ```
 
 ### Step 2 — Rank pages for the question (BM25)
 ```bash
-python skills/framework-learning/scripts/bm25_rank.py \
+python scripts/bm25_rank.py \
   --index artifacts/index.json \
   --query "$QUESTION" \
   --k 20 \
-  --out skills/framework-learning/artifacts/topk.json
+  --out artifacts/topk.json
 ```
 
 ### Step 3 — Fetch + convert only top-K pages to markdown
 ```bash
-python skills/framework-learning/scripts/fetch_to_md.py \
+python scripts/fetch_to_md.py \
   --topk artifacts/topk.json \
-  --out skills/framework-learning/artifacts/topk_pages/
+  --out artifacts/topk_pages/
 ```
 
 ### Step 4 — Answer with sources
-Read markdown files in `skills/framework-learning/artifacts/topk_pages/`
+Read markdown files in `artifacts/topk_pages/`
 
 Answer using only evidence from those pages.
 Include links back to the original docs URLs (one per major claim when possible).
 If the answer is incomplete, increase --k (e.g., 40) and repeat Steps 2–4.
 
 ## Output artifacts (what to expect)
-`skills/framework-learning/artifacts/discovered.json` : discovered URLs + basic metadata (title/headings/snippet).
+`artifacts/discovered.json` : discovered URLs + basic metadata (title/headings/snippet).
 
-`skills/framework-learning/artifacts/index.json` : normalized catalog used for ranking.
+`artifacts/index.json` : normalized catalog used for ranking.
 
-`skills/framework-learning/artifacts/topk.json` : ranked URLs + scores.
+`artifacts/topk.json` : ranked URLs + scores.
 
-`skills/framework-learning/artifacts/topk_pages/*.md` : cleaned markdown for the top-K pages.
+`artifacts/topk_pages/*.md` : cleaned markdown for the top-K pages.
 
 
 ## Safety and robustness
