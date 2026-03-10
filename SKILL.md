@@ -1,5 +1,5 @@
 ---
-name: framework-learning
+name: framework-docs-rag
 description: Learn and answer questions from any framework documentstion website quickly and accurately. Crawls a docs site from a seed URL, builds a lightweight URL index (titles/headings/snippets), BM25-ranks pages for a user's question, then fetehces and converts only the top-k pages to clean markdown for grounded answers with source links. Use when a user shares a docs URL and asks "how do I..", "where is..", "explain..", "OAuth/auth", "errors", "configuration" or "API usage"
 version: 1.0.0
 license: MIT
